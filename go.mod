@@ -1,4 +1,4 @@
-module github.com/DanWlker/asnb_cli
+module github.com/DanWlker/asnbcli
 
 go 1.24.1
 

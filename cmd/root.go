@@ -12,11 +12,13 @@ import (
 )
 
 const (
-	usernameF = "username"
-	passwordF = "password"
-	repeatF   = "repeat"
-	offsetF   = "offset"
-	fundsF    = "funds"
+	usernameF   = "username"
+	passwordF   = "password"
+	repeatF     = "repeat"
+	offsetF     = "offset"
+	fundsF      = "funds"
+	tokenF      = "token"
+	writeTokenF = "write-token"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -71,17 +73,11 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.asnb_cli.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().StringP(usernameF, "u", "", "Username for your account")
 	rootCmd.Flags().StringP(passwordF, "p", "", "Password for your account")
-	rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
-	rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")
+	// rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
+	// rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")
 	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.ASM1, internal.ASM2, internal.ASM3}, "The funds to try, defaults to ASM1, ASM2 and ASM3")
+	// rootCmd.Flags().StringP(tokenF, "t", "", "The bearer token to use for requests")
+	// rootCmd.Flags().Bool(writeTokenF, false, "Write the bearer token to a file to reuse in future calls")
 }

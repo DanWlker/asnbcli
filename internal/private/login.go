@@ -14,6 +14,13 @@ type LoginResult struct {
 }
 
 func Login(username, password string) (LoginResult, error) {
+	// TODO: Write the username and password into a jwt token
+
+	// TODO: Make the request with the jwt token, the body of the request is:
+	// {
+	//   "jwt": <The token>
+	// }
+
 	result := LoginResult{}
 
 	return result, nil

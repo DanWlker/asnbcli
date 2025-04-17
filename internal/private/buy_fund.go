@@ -7,6 +7,80 @@ import (
 	"net/http"
 )
 
+type FundData struct {
+	AgentCode                            string `json:"AGENTCODE"`
+	AmountApplied                        int    `json:"AMOUNTAPPLIED"`
+	BankTxnReferenceNumber               string `json:"BANKTXNREFERENCENUMBER"`
+	BranchCode                           string `json:"BRANCHCODE"`
+	ChannelType                          string `json:"CHANNELTYPE"`
+	DeviceOwner                          string `json:"DEVICEOWNER"`
+	FundId                               string `json:"FUNDID"`
+	IdentificationNumber                 string `json:"IDENTIFICATIONNUMBER"`
+	IdentificationType                   string `json:"IDENTIFICATIONTYPE"`
+	InvestmentToleranceScore             string `json:"INVESTMENTTOLERANCESCORE"`
+	PaymentType                          string `json:"PAYMENTTYPE"`
+	RejectCode                           string `json:"REJECTCODE"`
+	RejectReason                         string `json:"REJECTREASON"`
+	RequestOrIdentification              string `json:"REQUESTORIDENTIFICATION"`
+	RiskProfile                          string `json:"RISKPROFILE"`
+	SourceRefNo                          string `json:"SOURCEREFNO"`
+	SuitabilityAssessmentCode            string `json:"SUITABILITYASSESSMENTCODE"`
+	SuitabilityAssessmentStatus          string `json:"SUITABILITYASSESSMENTSTATUS"`
+	TransactionDate                      string `json:"TRANSACTIONDATE"`
+	TransactionStatus                    string `json:"TRANSACTIONSTATUS"`
+	TransactionTime                      string `json:"TRANSACTIONTIME"`
+	UnitHolderId                         string `json:"UNITHOLDERID"`
+	FirstName                            string `json:"FIRSTNAME"`
+	CustomerIcNumber                     string `json:"CUSTOMERICNUMBER"`
+	CustomerName                         string `json:"CUSTOMERNAME"`
+	BankCustPhoneNumber                  string `json:"BANKCUSTPHONENUMBER"`
+	BankAccountNumber                    string `json:"BANKACCOUNTNUMBER"`
+	BankBranchCode                       string `json:"BANKBRANCHCODE"`
+	ChequeNumber                         string `json:"CHEQUENUMBER"`
+	ChequeDate                           string `json:"CHEQUEDATE"`
+	GuardianId                           string `json:"GUARDIANID"`
+	GuardianIcType                       string `json:"GUARDIANICTYPE"`
+	GuardianIcNumber                     string `json:"GUARDIANICNUMBER"`
+	PolicyNumber                         string `json:"POLICYNUMBER"`
+	EpfNumber                            string `json:"EPFNUMBER"`
+	SubPaymentType                       string `json:"SUBPAYMENTTYPE"`
+	EwGateway                            string `json:"EWGATEWAY"`
+	ThirdPartyInvestment                 string `json:"THIRDPARTYINVESTMENT"`
+	ThirdPartyName                       string `json:"THIRDPARTYNAME"`
+	ThirdPartyIcType                     string `json:"THIRDPARTYICTYPE"`
+	ThirdPartyIcNumber                   string `json:"THIRDPARTYICNUMBER"`
+	ThirdPartyRelationship               string `json:"THIRDPARTYRELATIONSHIP"`
+	ReasonForTransfer                    string `json:"REASONFORTRANSFER"`
+	SourceOfFund                         string `json:"SOURCEOFFUND"`
+	OtherSourceOfFund                    string `json:"OTHERSOURCEOFFUND"`
+	FunderName                           string `json:"FUNDERNAME"`
+	SourceOfWealth                       string `json:"SOURCEOFWEALTH"`
+	OtherSourceOfWealth                  string `json:"OTHERSOURCEOFWEALTH"`
+	UnitsAlloted                         string `json:"UNITSALLOTED"`
+	TransactionNumber                    string `json:"TRANSACTIONNUMBER"`
+	FundPrice                            string `json:"FUNDPRICE"`
+	FeePercentage                        string `json:"FEEPERCENTAGE"`
+	SalesCharge                          string `json:"SALESCHARGE"`
+	GstAmount                            string `json:"GSTAMOUNT"`
+	TaxInvoiceNumber                     string `json:"TAXINVOICENUMBER"`
+	InvestmentToleranceLevel             string `json:"INVESTMENTTOLERANCELEVEL"`
+	ThirdPartyResidentialAddressLine1    string `json:"THIRDPARTYRESIDENTIALADDRESSLINE1"`
+	ThirdPartyResidentialAddressLine2    string `json:"THIRDPARTYRESIDENTIALADDRESSLINE2"`
+	ThirdPartyResidentialAddressCity     string `json:"THIRDPARTYRESIDENTIALADDRESSCITY"`
+	ThirdPartyResidentialAddressState    string `json:"THIRDPARTYRESIDENTIALADDRESSSTATE"`
+	ThirdPartyResidentialAddressPostCode string `json:"THIRDPARTYRESIDENTIALADDRESSPOSTCODE"`
+	ThirdPartyResidentialAddressCountry  string `json:"THIRDPARTYRESIDENTIALADDRESSCOUNTRY"`
+	ThirdPartyMobileNumber               string `json:"THIRDPARTYMOBILENUMBER"`
+	FeeType                              string `json:"FEETYPE"`
+	LeadGenerator                        string `json:"LEADGENERATOR"`
+	FinancialExecutive                   string `json:"FINANCIALEXECUTIVE"`
+	FpxUrl                               string `json:"FPX_URL"`
+}
+
+type BuyFundResponse struct {
+	Data FundData `json:"data"`
+}
+
 type buyFundRequest struct {
 	Amount               string `json:"amount"`
 	FpxBankID            string `json:"fpxBankId"`

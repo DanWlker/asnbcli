@@ -129,8 +129,11 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 		return fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	url := fmt.Sprintf("https://myasnb-api-v4.myasnb.com.my/v2/subscription/provisional/%v/%v", unitHolderId, fund)
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(reqBodyJson))
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("https://myasnb-api-v4.myasnb.com.my/v2/subscription/provisional/%v/%v", unitHolderId, fund),
+		bytes.NewBuffer(reqBodyJson),
+	)
 	if err != nil {
 		return fmt.Errorf("http.NewRequest: %w", err)
 	}

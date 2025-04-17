@@ -26,7 +26,11 @@ type getAllFpxBanksResult struct {
 }
 
 func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
-	req, err := http.NewRequest(http.MethodGet, "https://myasnb-api-v4.myasnb.com.my/v2/subscription/fpxbanks", nil)
+	req, err := http.NewRequest(
+		http.MethodGet,
+		"https://myasnb-api-v4.myasnb.com.my/v2/subscription/fpxbanks",
+		nil,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}

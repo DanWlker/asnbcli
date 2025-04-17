@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -76,6 +77,10 @@ func StartExecution(params entryParams) error {
 		return fmt.Errorf("private.Login: %w", err)
 	}
 
+	if loginResult.Token == "" {
+		return errors.New("token is empty, exiting")
+	}
+
 	switch params.paymentMethod {
 	case Tngd:
 		for _, fund := range params.funds {
@@ -109,7 +114,6 @@ func StartExecution(params entryParams) error {
 				return fmt.Errorf("private.GetAllFpxBanks: %w", err)
 			}
 
-			// TODO: Allow tng, boost as well
 			fmt.Println("Select bank to use...")
 			for i, fpxBank := range fpxBanks {
 				fmt.Printf("%v: %v\n", i, fpxBank.FullName)

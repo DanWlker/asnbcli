@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"syscall"
 
 	"golang.org/x/term"
@@ -26,5 +27,6 @@ func InputHelper(prompt string, shouldHide bool) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("InputHelper: ReadString: %w", err)
 	}
+	value = strings.TrimSuffix(value, "\n")
 	return value, nil
 }

@@ -35,7 +35,6 @@ var rootCmd = &cobra.Command{
 				panic(fmt.Errorf("unable to get username: %v", err))
 			}
 		}
-		username = strings.TrimSuffix(username, "\n")
 
 		password, err := cmd.Flags().GetString(passwordF)
 		if err != nil || password == "" {

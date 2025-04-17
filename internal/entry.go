@@ -41,12 +41,28 @@ func WithFunds(funds []string) Option {
 }
 
 func StartExecution(params entryParams) error {
+	fmt.Println("=============")
+	fmt.Println("Logging in...")
+	fmt.Println("=============")
 	loginResult, err := private.Login(params.username, params.password)
 	if err != nil {
-		return err
+		return fmt.Errorf("private.Login: %w", err)
 	}
 
-	fmt.Println(loginResult)
+	fmt.Println("=============")
+	fmt.Println("Getting all fpx banks...")
+	fmt.Println("=============")
+	fpxBanks, err := private.GetAllFpxBanks(fmt.Sprintf("Bearer %v", loginResult.Token))
+	if err != nil {
+		return fmt.Errorf("private.GetAllFpxBanks: %w", err)
+	}
+
+	fmt.Println("=============")
+	fmt.Println("Select bank to use:")
+	fmt.Println("=============")
+	for i, fpxBank := range fpxBanks {
+		fmt.Printf("%v: %v\n", i, fpxBank.FullName)
+	}
 
 	return nil
 }

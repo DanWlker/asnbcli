@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type LoginResult struct {
-	Token                string `json:"token"` // TODO: This is technically a jwt token
+	Token                string `json:"token"`
 	Uhid                 string `json:"uhid"`
 	FirstTimeLogin       int    `json:"first_time_login"`
 	PreferredLanguage    string `json:"preferred_language"`
@@ -61,10 +62,14 @@ func Login(username, password string) (*LoginResult, error) {
 	if err != nil {
 		return nil, fmt.Errorf("http.Post: %w", err)
 	}
+	defer resp.Body.Close()
+	// respByte, err := httputil.DumpResponse(resp, true)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("httputil.DumpResponse: %w", err)
+	// }
+	// fmt.Println(string(respByte))
 
-	var body []byte
-	_, err = resp.Body.Read(body)
-	fmt.Println(string(body))
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("resp.Body.Read: %w", err)
 	}

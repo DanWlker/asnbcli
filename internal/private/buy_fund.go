@@ -83,7 +83,6 @@ type BuyFundResponse struct {
 
 type buyFundRequest struct {
 	Amount               string `json:"amount"`
-	FpxBankID            string `json:"fpxBankId"`
 	TxnCode              string `json:"TXN_CODE"`
 	CriteriaConfirm      bool   `json:"CRITERIACONFIRM"`
 	ProspectusAgree      bool   `json:"PROSPECTUSAGREE"`
@@ -92,12 +91,27 @@ type buyFundRequest struct {
 	RiskOtherSrcOfFund   string `json:"riskOtherSrcOfFund"`
 	RiskOtherSrcOfWealth string `json:"riskOtherSrcOfWealth"`
 	ReferralCode         string `json:"referral_code"`
+
+	// Different things that should be omitted if empty
+	FpxBankID        string `json:"fpxBankId,omitempty"`
+	PaymentProcessor string `json:"paymentProcessor,omitempty"`
 }
 
-func BuyFund(authorization, amount, fund, unitHolderId, fpxBankId string) error {
+func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) error {
+	return buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
+}
+
+func BuyFundWithTng(authorization, amount, fund, unitHolderId string) error {
+	return buyFund(authorization, amount, fund, unitHolderId, "TNGD", "")
+}
+
+func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) error {
+	return buyFund(authorization, amount, fund, unitHolderId, "boost", "")
+}
+
+func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) error {
 	reqBody := buyFundRequest{
 		Amount:               amount,
-		FpxBankID:            fpxBankId,
 		TxnCode:              "I01",
 		CriteriaConfirm:      true,
 		ProspectusAgree:      true,
@@ -106,6 +120,9 @@ func BuyFund(authorization, amount, fund, unitHolderId, fpxBankId string) error 
 		RiskOtherSrcOfFund:   "",
 		RiskOtherSrcOfWealth: "",
 		ReferralCode:         "",
+		// Extras
+		FpxBankID:        fpxBankId,
+		PaymentProcessor: paymentProcessor,
 	}
 	reqBodyJson, err := json.Marshal(reqBody)
 	if err != nil {

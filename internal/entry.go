@@ -96,7 +96,7 @@ func StartExecution(params entryParams) error {
 	}
 
 	for _, fund := range params.funds {
-		err = private.BuyFund(fmt.Sprintf("Bearer %v", loginResult.Token), amount, fund, loginResult.Uhid, selectedBank.FpxBankCode)
+		err = private.BuyFundWithFpx(fmt.Sprintf("Bearer %v", loginResult.Token), amount, fund, loginResult.Uhid, selectedBank.FpxBankCode)
 		if err != nil {
 			return fmt.Errorf("BuyFund: %w", err)
 		}

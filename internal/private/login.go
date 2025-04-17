@@ -1,5 +1,15 @@
 package private
 
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
+
 type LoginResult struct {
 	Token                string `json:"token"` // TODO: This is technically a jwt token
 	Uhid                 string `json:"uhid"`
@@ -13,15 +23,57 @@ type LoginResult struct {
 	IsRegisterDevice     bool   `json:"isRegisterDevice"`
 }
 
-func Login(username, password string) (LoginResult, error) {
-	// TODO: Write the username and password into a jwt token
+type loginRequest struct {
+	Jwt string `json:"jwt"`
+}
 
-	// TODO: Make the request with the jwt token, the body of the request is:
-	// {
-	//   "jwt": <The token>
-	// }
+func Login(username, password string) (*LoginResult, error) {
+
+	currDate := time.Now()
+	currDateUnix := currDate.Unix()
+	twentyMonthsLater := currDate.AddDate(1, 8, 0)
+	twentyMonthsLaterUnix := twentyMonthsLater.Unix()
+
+	t := jwt.NewWithClaims(
+		jwt.SigningMethodHS512,
+		jwt.MapClaims{
+			"applicationID": "MYASNB",
+			"aud":           "www.myasnb.com.my",
+			"deviceId":      "",
+			"exp":           twentyMonthsLaterUnix,
+			"iat":           currDateUnix,
+			"password":      password,
+			"sub":           username,
+		},
+	)
+	signedString, err := t.SignedString([]byte(key))
+	if err != nil {
+		return nil, fmt.Errorf("t.SignedString: %w", err)
+	}
+
+	reqBody := loginRequest{Jwt: signedString}
+	reqBodyJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("json.Marshal: %w", err)
+	}
+
+	resp, err := http.Post("https://myasnb-api-v4.myasnb.com.my/v2/login", "application/json", bytes.NewBuffer(reqBodyJson))
+	if err != nil {
+		return nil, fmt.Errorf("http.Post: %w", err)
+	}
+
+	var body []byte
+	_, err = resp.Body.Read(body)
+	fmt.Println(string(body))
+	if err != nil {
+		return nil, fmt.Errorf("resp.Body.Read: %w", err)
+	}
 
 	result := LoginResult{}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return nil, fmt.Errorf("json.Unmarshal: %w", err)
+	}
 
-	return result, nil
+	return &result, nil
 }

@@ -43,7 +43,7 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	defer resp.Body.Close()
 
 	// TODO: Remove this
-	PrintResponseHelper(resp)
+	// PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

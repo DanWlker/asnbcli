@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 )
 
 type FpxBanks struct {
@@ -39,13 +38,8 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	}
 	defer resp.Body.Close()
 
-	respByte, err := httputil.DumpResponse(resp, true)
-	if err != nil {
-		return nil, fmt.Errorf("httputil.DumpResponse: %w", err)
-	}
-	fmt.Println("")
-	fmt.Println(string(respByte))
-	fmt.Println("")
+	// TODO: Remove this
+	PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/DanWlker/asnbcli/internal/private"
 )
@@ -57,11 +58,48 @@ func StartExecution(params entryParams) error {
 		return fmt.Errorf("private.GetAllFpxBanks: %w", err)
 	}
 
+	// TODO: Allow tng, boost as well
 	fmt.Println("=============")
-	fmt.Println("Select bank to use:")
+	fmt.Println("Select bank to use...")
 	fmt.Println("=============")
-	for i, fpxBank := range fpxBanks {
-		fmt.Printf("%v: %v\n", i, fpxBank.FullName)
+	var selectedBank private.FpxBanks
+	for range 3 {
+		for i, fpxBank := range fpxBanks {
+			fmt.Printf("%v: %v\n", i, fpxBank.FullName)
+		}
+
+		selectedId, err := InputHelper("Enter number (ex. 1): ", false)
+		if err != nil {
+			fmt.Println(fmt.Errorf("select bank: InputHelper: %w", err))
+			continue
+		}
+		selectedIdInt, err := strconv.ParseInt(selectedId, 10, 64)
+		if err != nil {
+			fmt.Println(fmt.Errorf("select bank: strconv.ParseInt: %w", err))
+			continue
+		}
+		if selectedIdInt >= int64(len(fpxBanks)) || selectedIdInt < 0 {
+			fmt.Println(fmt.Errorf("invalid range, must be between 0 and %v: %v", len(fpxBanks), selectedId))
+			continue
+		}
+
+		selectedBank = fpxBanks[int(selectedIdInt)]
+		break
+	}
+
+	fmt.Println("=============")
+	fmt.Println("Fund buy details...")
+	fmt.Println("=============")
+	amount, err := InputHelper("Amount (ex. 500): ", false)
+	if err != nil {
+		return fmt.Errorf("InputHelper: %w", err)
+	}
+
+	for _, fund := range params.funds {
+		err = private.BuyFund(fmt.Sprintf("Bearer %v", loginResult.Token), amount, fund, loginResult.Uhid, selectedBank.FpxBankCode)
+		if err != nil {
+			return fmt.Errorf("BuyFund: %w", err)
+		}
 	}
 
 	return nil

@@ -136,13 +136,15 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	}
 	req.Header.Add("Authorization", authorization)
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("http.DefaultClient.Do: %w", err)
-	}
+	PrintRequestHelper(req)
+
+	// resp, err := http.DefaultClient.Do(req)
+	// if err != nil {
+	// 	return fmt.Errorf("http.DefaultClient.Do: %w", err)
+	// }
 
 	// TODO: Remove this
-	PrintResponseHelper(resp)
+	// PrintResponseHelper(resp)
 
 	return nil
 }

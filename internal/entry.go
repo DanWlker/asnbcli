@@ -82,7 +82,7 @@ func StartExecution(params entryParams) error {
 			err = private.BuyFundWithTng(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fund,
+				fundToUrlPostfix[fund],
 				loginResult.Uhid,
 			)
 			if err != nil {
@@ -94,7 +94,7 @@ func StartExecution(params entryParams) error {
 			err = private.BuyFundWithBoost(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fund,
+				fundToUrlPostfix[fund],
 				loginResult.Uhid,
 			)
 			if err != nil {
@@ -134,7 +134,7 @@ func StartExecution(params entryParams) error {
 			err = private.BuyFundWithFpx(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fund,
+				fundToUrlPostfix[fund],
 				loginResult.Uhid,
 				params.fpxBank,
 			)

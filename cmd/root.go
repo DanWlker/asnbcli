@@ -67,7 +67,7 @@ var rootCmd = &cobra.Command{
 				fmt.Printf("%v: %v\n", i, method)
 			}
 
-			selectedIdxStr, err := internal.InputHelper("Select payment method (ex. 1):", false)
+			selectedIdxStr, err := internal.InputHelper("Select payment method (ex. 1): ", false)
 			if err != nil {
 				panic(fmt.Errorf("unable to get payment method: %v", err))
 			}
@@ -134,7 +134,7 @@ func init() {
 	rootCmd.Flags().StringP(usernameF, "u", "", "Username for your account")
 	rootCmd.Flags().StringP(passwordF, "p", "", "Password for your account")
 	rootCmd.Flags().StringP(amountF, "a", "", "Amount to buy")
-	rootCmd.Flags().StringP(paymentMethodF, "p", "", fmt.Sprintf("Payment method to use, accepted values: %v", strings.Join(internal.AllPaymentMethods, ",")))
+	rootCmd.Flags().StringP(paymentMethodF, "m", "", fmt.Sprintf("Payment method to use, accepted values: %v", strings.Join(internal.AllPaymentMethods, ",")))
 	rootCmd.Flags().String(fpxBankF, "", "Fpx bank to use (ex. HLB0224)")
 	// rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
 	// rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")

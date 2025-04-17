@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

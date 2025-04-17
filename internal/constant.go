@@ -1,13 +1,25 @@
 package internal
 
 const (
-	ASM1 = "ASM1"
-	ASM2 = "ASM2"
-	ASM3 = "ASM3"
+	Asm1 = "asm1"
+	Asm2 = "asm2"
+	Asm3 = "asm3"
 )
 
 var fundToUrlPostfix = map[string]string{
-	ASM1: "ASM",
-	ASM2: "ASW",
-	ASM3: "AS1M",
+	Asm1: "ASM",
+	Asm2: "ASW",
+	Asm3: "AS1M",
+}
+
+const (
+	Tngd  = "tngd"
+	Boost = "boost"
+	Fpx   = "fpx"
+)
+
+var AllPaymentMethods = []string{
+	Tngd,
+	Boost,
+	Fpx,
 }

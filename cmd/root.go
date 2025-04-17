@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/DanWlker/asnbcli/internal"
@@ -13,13 +14,16 @@ import (
 )
 
 const (
-	usernameF   = "username"
-	passwordF   = "password"
-	repeatF     = "repeat"
-	offsetF     = "offset"
-	fundsF      = "funds"
-	tokenF      = "token"
-	writeTokenF = "write-token"
+	usernameF      = "username"
+	passwordF      = "password"
+	repeatF        = "repeat"
+	offsetF        = "offset"
+	fundsF         = "funds"
+	tokenF         = "token"
+	writeTokenF    = "write-token"
+	amountF        = "amount"
+	paymentMethodF = "payment-method"
+	fpxBankF       = "fpx-bank"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -28,6 +32,7 @@ var rootCmd = &cobra.Command{
 	Short: "A cli app to simplify buying asnb funds so you (hopefully) don't have to wake up at 2 am ",
 	Long:  `A cli app that returns a payment link, simplifies the process of buying asnb funds. It also has repeat functionality with offset for each loop`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Username
 		username, err := cmd.Flags().GetString(usernameF)
 		if err != nil || username == "" {
 			username, err = internal.InputHelper("Username: ", false)
@@ -36,6 +41,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		// Password
 		password, err := cmd.Flags().GetString(passwordF)
 		if err != nil || password == "" {
 			password, err = internal.InputHelper("Password: ", true)
@@ -44,11 +50,60 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		// Amount
+		amount, err := cmd.Flags().GetString(amountF)
+		if err != nil || amount == "" {
+			amount, err = internal.InputHelper("Amount in RM (ex. 20): ", false)
+			if err != nil {
+				panic(fmt.Errorf("unable to get amount: %v", err))
+			}
+
+		}
+
+		// Payment Method
+		paymentMethod, err := cmd.Flags().GetString(paymentMethodF)
+		if err != nil || paymentMethod == "" {
+			for i, method := range internal.AllPaymentMethods {
+				fmt.Printf("%v: %v\n", i, method)
+			}
+
+			selectedIdxStr, err := internal.InputHelper("Select payment method (ex. 1):", false)
+			if err != nil {
+				panic(fmt.Errorf("unable to get payment method: %v", err))
+			}
+			selectedIdx, err := strconv.ParseInt(selectedIdxStr, 10, 64)
+			if err != nil {
+				panic(fmt.Errorf("payment method: strconv.ParseInt: %w", err))
+			}
+			if selectedIdx >= int64(len(internal.AllPaymentMethods)) || selectedIdx < 0 {
+				panic(fmt.Errorf("invalid range, must be between 0 and %v: %v", len(internal.AllPaymentMethods), selectedIdx))
+			}
+
+			paymentMethod = internal.AllPaymentMethods[int(selectedIdx)]
+		}
+
+		var paymentMethodFunc internal.Option
+		switch paymentMethod {
+		case internal.Tngd:
+			paymentMethodFunc = internal.WithTngd()
+		case internal.Boost:
+			paymentMethodFunc = internal.WithBoost()
+		case internal.Fpx:
+			fpxBank, err := cmd.Flags().GetString(fpxBankF)
+			if err != nil {
+				fmt.Println("error when getting fpx bank, will prompt again later")
+			}
+			if fpxBank == "" {
+				fmt.Println("bank for fpx payment not specified, will prompt again later")
+			}
+			paymentMethodFunc = internal.WithFpx(fpxBank)
+		}
+
+		// Fund list
 		funds, err := cmd.Flags().GetStringSlice(fundsF)
 		if err != nil {
 			panic(fmt.Errorf("unable to get funds: %v", err))
 		}
-
 		if len(funds) == 0 {
 			fmt.Println("No funds specified")
 			return
@@ -58,6 +113,8 @@ var rootCmd = &cobra.Command{
 			internal.WithUsername(username),
 			internal.WithPassword(password),
 			internal.WithFunds(funds),
+			internal.WithAmount(amount),
+			paymentMethodFunc,
 		)); err != nil {
 			panic(err)
 		}
@@ -76,9 +133,12 @@ func Execute() {
 func init() {
 	rootCmd.Flags().StringP(usernameF, "u", "", "Username for your account")
 	rootCmd.Flags().StringP(passwordF, "p", "", "Password for your account")
+	rootCmd.Flags().StringP(amountF, "a", "", "Amount to buy")
+	rootCmd.Flags().StringP(paymentMethodF, "p", "", fmt.Sprintf("Payment method to use, accepted values: %v", strings.Join(internal.AllPaymentMethods, ",")))
+	rootCmd.Flags().String(fpxBankF, "", "Fpx bank to use (ex. HLB0224)")
 	// rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
 	// rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")
-	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.ASM1, internal.ASM2, internal.ASM3}, "The funds to try, defaults to ASM1, ASM2 and ASM3")
+	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.Asm1, internal.Asm2, internal.Asm3}, "The funds to try, defaults to ASM1, ASM2 and ASM3")
 	// rootCmd.Flags().StringP(tokenF, "t", "", "The bearer token to use for requests")
 	// rootCmd.Flags().Bool(writeTokenF, false, "Write the bearer token to a file to reuse in future calls")
 }

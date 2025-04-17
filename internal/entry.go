@@ -8,9 +8,12 @@ import (
 )
 
 type entryParams struct {
-	username string
-	password string
-	funds    []string
+	username      string
+	password      string
+	funds         []string
+	amount        string
+	paymentMethod string
+	fpxBank       string
 }
 
 type Option func(*entryParams)
@@ -35,6 +38,31 @@ func WithPassword(password string) Option {
 	}
 }
 
+func WithAmount(amount string) Option {
+	return func(e *entryParams) {
+		e.amount = amount
+	}
+}
+
+func WithBoost() Option {
+	return func(e *entryParams) {
+		e.paymentMethod = Boost
+	}
+}
+
+func WithTngd() Option {
+	return func(e *entryParams) {
+		e.paymentMethod = Tngd
+	}
+}
+
+func WithFpx(fpxBank string) Option {
+	return func(e *entryParams) {
+		e.paymentMethod = Fpx
+		e.fpxBank = fpxBank
+	}
+}
+
 func WithFunds(funds []string) Option {
 	return func(e *entryParams) {
 		e.funds = funds
@@ -42,64 +70,80 @@ func WithFunds(funds []string) Option {
 }
 
 func StartExecution(params entryParams) error {
-	fmt.Println("=============")
 	fmt.Println("Logging in...")
-	fmt.Println("=============")
 	loginResult, err := private.Login(params.username, params.password)
 	if err != nil {
 		return fmt.Errorf("private.Login: %w", err)
 	}
 
-	fmt.Println("=============")
-	fmt.Println("Getting all fpx banks...")
-	fmt.Println("=============")
-	fpxBanks, err := private.GetAllFpxBanks(fmt.Sprintf("Bearer %v", loginResult.Token))
-	if err != nil {
-		return fmt.Errorf("private.GetAllFpxBanks: %w", err)
-	}
+	switch params.paymentMethod {
+	case Tngd:
+		for _, fund := range params.funds {
+			err = private.BuyFundWithTng(
+				fmt.Sprintf("Bearer %v", loginResult.Token),
+				params.amount,
+				fund,
+				loginResult.Uhid,
+			)
+			if err != nil {
+				return fmt.Errorf("BuyFundWithTng: %w", err)
+			}
+		}
+	case Boost:
+		for _, fund := range params.funds {
+			err = private.BuyFundWithBoost(
+				fmt.Sprintf("Bearer %v", loginResult.Token),
+				params.amount,
+				fund,
+				loginResult.Uhid,
+			)
+			if err != nil {
+				return fmt.Errorf("BuyFundWithBoost: %w", err)
+			}
+		}
+	case Fpx:
+		if params.fpxBank == "" {
+			fmt.Println("Getting all fpx banks...")
+			fpxBanks, err := private.GetAllFpxBanks(fmt.Sprintf("Bearer %v", loginResult.Token))
+			if err != nil {
+				return fmt.Errorf("private.GetAllFpxBanks: %w", err)
+			}
 
-	// TODO: Allow tng, boost as well
-	fmt.Println("=============")
-	fmt.Println("Select bank to use...")
-	fmt.Println("=============")
-	var selectedBank private.FpxBanks
-	for range 3 {
-		for i, fpxBank := range fpxBanks {
-			fmt.Printf("%v: %v\n", i, fpxBank.FullName)
+			// TODO: Allow tng, boost as well
+			fmt.Println("Select bank to use...")
+			for i, fpxBank := range fpxBanks {
+				fmt.Printf("%v: %v\n", i, fpxBank.FullName)
+			}
+
+			selectedId, err := InputHelper("Enter number (ex. 1): ", false)
+			if err != nil {
+				return fmt.Errorf("select bank: InputHelper: %w", err)
+			}
+			selectedIdInt, err := strconv.ParseInt(selectedId, 10, 64)
+			if err != nil {
+				return fmt.Errorf("select bank: strconv.ParseInt: %w", err)
+			}
+			if selectedIdInt >= int64(len(fpxBanks)) || selectedIdInt < 0 {
+				return fmt.Errorf("invalid range, must be between 0 and %v: %v", len(fpxBanks), selectedId)
+			}
+
+			params.fpxBank = fpxBanks[int(selectedIdInt)].FpxBankCode
 		}
 
-		selectedId, err := InputHelper("Enter number (ex. 1): ", false)
-		if err != nil {
-			fmt.Println(fmt.Errorf("select bank: InputHelper: %w", err))
-			continue
+		for _, fund := range params.funds {
+			err = private.BuyFundWithFpx(
+				fmt.Sprintf("Bearer %v", loginResult.Token),
+				params.amount,
+				fund,
+				loginResult.Uhid,
+				params.fpxBank,
+			)
+			if err != nil {
+				return fmt.Errorf("BuyFund: %w", err)
+			}
 		}
-		selectedIdInt, err := strconv.ParseInt(selectedId, 10, 64)
-		if err != nil {
-			fmt.Println(fmt.Errorf("select bank: strconv.ParseInt: %w", err))
-			continue
-		}
-		if selectedIdInt >= int64(len(fpxBanks)) || selectedIdInt < 0 {
-			fmt.Println(fmt.Errorf("invalid range, must be between 0 and %v: %v", len(fpxBanks), selectedId))
-			continue
-		}
-
-		selectedBank = fpxBanks[int(selectedIdInt)]
-		break
-	}
-
-	fmt.Println("=============")
-	fmt.Println("Fund buy details...")
-	fmt.Println("=============")
-	amount, err := InputHelper("Amount (ex. 500): ", false)
-	if err != nil {
-		return fmt.Errorf("InputHelper: %w", err)
-	}
-
-	for _, fund := range params.funds {
-		err = private.BuyFundWithFpx(fmt.Sprintf("Bearer %v", loginResult.Token), amount, fund, loginResult.Uhid, selectedBank.FpxBankCode)
-		if err != nil {
-			return fmt.Errorf("BuyFund: %w", err)
-		}
+	default:
+		panic(fmt.Errorf("unknown payment method: %v", params.paymentMethod))
 	}
 
 	return nil

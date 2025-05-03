@@ -1,6 +1,6 @@
 # asnbcli
 
-A cli app to simplify buying asnb funds so you (hopefully) don't have to wake up at 2 am
+A cli app to simplify buying asnb funds so you (hopefully) don't have to wake up at 2 am. The cli takes your username and password and tries to buy asm1, asm2 and asm3 funds, if successful it will return a payment link so you can pay directly.
 
 ## READ FIRST
 

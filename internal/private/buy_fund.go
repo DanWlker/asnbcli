@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -74,7 +75,31 @@ type FundData struct {
 	FeeType                              string `json:"FEETYPE"`
 	LeadGenerator                        string `json:"LEADGENERATOR"`
 	FinancialExecutive                   string `json:"FINANCIALEXECUTIVE"`
-	FpxUrl                               string `json:"FPX_URL"`
+
+	// FPX
+	FpxUrl string `json:"FPX_URL"`
+
+	// TNGD
+	// TNGD_URL.TNGD_BODY.tngDResponse.response.body.checkoutUrl,
+	TngdUrl struct {
+		TngdBody struct {
+			TngdResponse struct {
+				Response struct {
+					Body struct {
+						CheckoutUrl string `json:"checkoutUrl"`
+					} `json:"body"`
+				} `json:"response"`
+			} `json:"tngDResponse"`
+		} `json:"TNGD_BODY"`
+	} `json:"TNGD_URL"`
+
+	// Boost
+	// BOOST_URL.boostQRResponse.checkoutURI
+	Boost struct {
+		BoostQrResponse struct {
+			CheckoutUri string `json:"checkoutURI"`
+		} `json:"boostQRResponse"`
+	} `json:"BOOST_URL"`
 }
 
 type BuyFundResponse struct {
@@ -98,18 +123,52 @@ type buyFundRequest struct {
 }
 
 func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) error {
-	return buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
+	fmt.Println("buying with fpx")
+	// return buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
+	return nil
 }
 
 func BuyFundWithTng(authorization, amount, fund, unitHolderId string) error {
-	return buyFund(authorization, amount, fund, unitHolderId, "TNGD", "")
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "TNGD", "")
+	if err != nil {
+		return err
+	}
+
+	if err := checkBuyFundError(resp); err != nil {
+		return err
+	}
+
+	if resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl == "" {
+		return fmt.Errorf("tngd checkout url is empty")
+	}
+
+	fmt.Println(resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl)
+
+	return nil
 }
 
 func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) error {
-	return buyFund(authorization, amount, fund, unitHolderId, "boost", "")
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "boost", "")
+	if err != nil {
+		return err
+	}
+
+	if err := checkBuyFundError(resp); err != nil {
+		return err
+	}
+
+	if resp.Data.Boost.BoostQrResponse.CheckoutUri == "" {
+		return fmt.Errorf("boost checkout uri is empty")
+	}
+
+	fmt.Println(resp.Data.Boost.BoostQrResponse.CheckoutUri)
+
+	return nil
 }
 
-func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) error {
+func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) (BuyFundResponse, error) {
+	res := BuyFundResponse{}
+
 	reqBody := buyFundRequest{
 		Amount:               amount,
 		TxnCode:              "I01",
@@ -126,7 +185,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	}
 	reqBodyJson, err := json.Marshal(reqBody)
 	if err != nil {
-		return fmt.Errorf("json.Marshal: %w", err)
+		return res, fmt.Errorf("json.Marshal: %w", err)
 	}
 
 	req, err := http.NewRequest(
@@ -135,19 +194,46 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 		bytes.NewBuffer(reqBodyJson),
 	)
 	if err != nil {
-		return fmt.Errorf("http.NewRequest: %w", err)
+		return res, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	req.Header.Add("Authorization", authorization)
-
-	PrintRequestHelper(req)
-
-	// resp, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	return fmt.Errorf("http.DefaultClient.Do: %w", err)
-	// }
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 
 	// TODO: Remove this
-	// PrintResponseHelper(resp)
+	PrintRequestHelper(req)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return res, fmt.Errorf("http.DefaultClient.Do: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// TODO: Remove this
+	PrintResponseHelper(resp)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, fmt.Errorf("resp.Body.Read: %w", err)
+	}
+
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func checkBuyFundError(resp BuyFundResponse) error {
+	if resp.Data.RejectCode != "" {
+		return fmt.Errorf(
+			"buy fund tng returned with reject code: %v, reject reason: %v, transaction status: %v",
+			resp.Data.RejectCode,
+			resp.Data.RejectReason,
+			resp.Data.TransactionStatus,
+		)
+	}
 
 	return nil
 }

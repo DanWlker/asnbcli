@@ -29,6 +29,7 @@ type loginRequest struct {
 }
 
 func Login(username, password string) (*LoginResult, error) {
+	key := "IVObMPuj2rnhBGaOa0YN5TopZsLnGdPqOffDxXJVOSKFqonbIGE0a7xGgGUdq2_TSzpOBGqe9hMI5nV0AtGMV5ieBo_uwIFWzgL19LI16khI_xdvrMvsBN_i4Ay91qd1zt3lCXdp9-Df16mxIeqVbIn6E1hzQxc_QOWwwS-SkEI"
 
 	currDate := time.Now()
 	currDateUnix := currDate.Unix()

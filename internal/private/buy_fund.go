@@ -6,7 +6,32 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
+
+type FpxData struct {
+	FpxBuyerAccNo      string `json:"fpx_buyerAccNo"`
+	FpxBuyerBankBranch string `json:"fpx_buyerBankBranch"`
+	FpxBuyerBankId     string `json:"fpx_buyerBankId"`
+	FpxBuyerEmail      string `json:"fpx_buyerEmail"`
+	FpxBuyerIban       string `json:"fpx_buyerIban"`
+	FpxBuyerId         string `json:"fpx_buyerId"`
+	FpxBuyerName       string `json:"fpx_buyerName"`
+	FpxCheckSum        string `json:"fpx_checkSum"`
+	FpxMakerName       string `json:"fpx_makerName"`
+	FpxMsgToken        string `json:"fpx_msgToken"`
+	FpxMsgType         string `json:"fpx_msgType"`
+	FpxProductDesc     string `json:"fpx_productDesc"`
+	FpxSellerBankCode  string `json:"fpx_sellerBankCode"`
+	FpxSellerExId      string `json:"fpx_sellerExId"`
+	FpxSellerExOrderNo string `json:"fpx_sellerExOrderNo"`
+	FpxSellerId        string `json:"fpx_sellerId"`
+	FpxSellerOrderNo   string `json:"fpx_sellerOrderNo"`
+	FpxSellerTxnTime   string `json:"fpx_sellerTxnTime"`
+	FpxTxnAmount       string `json:"fpx_txnAmount"`
+	FpxTxnCurrency     string `json:"fpx_txnCurrency"`
+	FpxVersion         string `json:"fpx_version"`
+}
 
 type FundData struct {
 	AgentCode                            string `json:"AGENTCODE"`
@@ -77,7 +102,8 @@ type FundData struct {
 	FinancialExecutive                   string `json:"FINANCIALEXECUTIVE"`
 
 	// FPX
-	FpxUrl string `json:"FPX_URL"`
+	FpxUrl  string  `json:"FPX_URL"`
+	FpxData FpxData `json:"FPX_DATA"`
 
 	// TNGD
 	// TNGD_URL.TNGD_BODY.tngDResponse.response.body.checkoutUrl,
@@ -123,8 +149,77 @@ type buyFundRequest struct {
 }
 
 func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) error {
-	fmt.Println("buying with fpx")
-	// return buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
+	if err != nil {
+		return err
+	}
+
+	if err := checkBuyFundError(resp); err != nil {
+		return err
+	}
+
+	if resp.Data.FpxUrl == "" {
+		return fmt.Errorf("fpx url is empty")
+	}
+
+	if resp.Data.FpxData == (FpxData{}) {
+		return fmt.Errorf("fpx data is empty")
+	}
+
+	// let L = encodeURI(
+	//     "fpx_buyerAccNo=" +
+	//       y +
+	//       "&fpx_buyerBankId=" +
+	//       j +
+	//       "&fpx_buyerEmail=" +
+	//       S +
+	//       "&fpx_msgToken=" +
+	//       T +
+	//       "&fpx_msgType=" +
+	//       k +
+	//       "&fpx_productDesc=" +
+	//       R +
+	//       "&fpx_sellerBankCode=" +
+	//       O +
+	//       "&fpx_sellerExId=" +
+	//       M +
+	//       "&fpx_sellerExOrderNo=" +
+	//       I +
+	//       "&fpx_sellerId=" +
+	//       P +
+	//       "&fpx_sellerOrderNo=" +
+	//       F +
+	//       "&fpx_sellerTxnTime=" +
+	//       U +
+	//       "&fpx_txnAmount=" +
+	//       X +
+	//       "&fpx_txnCurrency=" +
+	//       D +
+	//       "&fpx_version=" +
+	//       B +
+	//       "&fpx_checkSum=" +
+	//       _,
+	//   ),
+	queryParams := url.Values{}
+	queryParams.Add("fpx_buyerAccNo", resp.Data.FpxData.FpxBuyerAccNo)
+	queryParams.Add("fpx_buyerBankId", resp.Data.FpxData.FpxBuyerBankId)
+	queryParams.Add("fpx_buyerEmail", resp.Data.FpxData.FpxBuyerEmail)
+	queryParams.Add("fpx_msgToken", resp.Data.FpxData.FpxMsgToken)
+	queryParams.Add("fpx_msgType", resp.Data.FpxData.FpxMsgType)
+	queryParams.Add("fpx_productDesc", resp.Data.FpxData.FpxProductDesc)
+	queryParams.Add("fpx_sellerBankCode", resp.Data.FpxData.FpxSellerBankCode)
+	queryParams.Add("fpx_sellerExId", resp.Data.FpxData.FpxSellerExId)
+	queryParams.Add("fpx_sellerExOrderNo", resp.Data.FpxData.FpxSellerExOrderNo)
+	queryParams.Add("fpx_sellerId", resp.Data.FpxData.FpxSellerId)
+	queryParams.Add("fpx_sellerOrderNo", resp.Data.FpxData.FpxSellerOrderNo)
+	queryParams.Add("fpx_sellerTxnTime", resp.Data.FpxData.FpxSellerTxnTime)
+	queryParams.Add("fpx_txnAmount", resp.Data.FpxData.FpxTxnAmount)
+	queryParams.Add("fpx_txnCurrency", resp.Data.FpxData.FpxTxnCurrency)
+	queryParams.Add("fpx_version", resp.Data.FpxData.FpxVersion)
+	queryParams.Add("fpx_checkSum", resp.Data.FpxData.FpxCheckSum)
+
+	fmt.Println(resp.Data.FpxUrl + "?" + queryParams.Encode())
+
 	return nil
 }
 

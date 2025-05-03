@@ -91,7 +91,7 @@ func StartExecution(params entryParams) error {
 				loginResult.Uhid,
 			)
 			if err != nil {
-				return fmt.Errorf("BuyFundWithTng: %w", err)
+				fmt.Println("error: BuyFundWithTng: %w", err)
 			}
 		}
 	case Boost:

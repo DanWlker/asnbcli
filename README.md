@@ -8,7 +8,7 @@ This is your reminder to not download code from the internet and run it willy ni
 
 I am not responsible for anything that happens if you use this code, PLEASE AUDIT THE CODE YOURSELF BEFORE USING IT.
 
-As this is finance related, I WILL NEVER RELEASE A BINARY OF IT. 
+I WILL NEVER RELEASE A BINARY OF IT.
 
 You should NEVER use any distributed binaries that claim to be from this repo.
 

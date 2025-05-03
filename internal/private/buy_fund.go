@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-type FpxData struct {
+type fpxData struct {
 	FpxBuyerAccNo      string `json:"fpx_buyerAccNo"`
 	FpxBuyerBankBranch string `json:"fpx_buyerBankBranch"`
 	FpxBuyerBankId     string `json:"fpx_buyerBankId"`
@@ -33,7 +33,7 @@ type FpxData struct {
 	FpxVersion         string `json:"fpx_version"`
 }
 
-type FundData struct {
+type fundData struct {
 	AgentCode                            string `json:"AGENTCODE"`
 	AmountApplied                        int    `json:"AMOUNTAPPLIED"`
 	BankTxnReferenceNumber               string `json:"BANKTXNREFERENCENUMBER"`
@@ -103,7 +103,7 @@ type FundData struct {
 
 	// FPX
 	FpxUrl  string  `json:"FPX_URL"`
-	FpxData FpxData `json:"FPX_DATA"`
+	FpxData fpxData `json:"FPX_DATA"`
 
 	// TNGD
 	// TNGD_URL.TNGD_BODY.tngDResponse.response.body.checkoutUrl,
@@ -128,8 +128,8 @@ type FundData struct {
 	} `json:"BOOST_URL"`
 }
 
-type BuyFundResponse struct {
-	Data FundData `json:"data"`
+type buyFundResponse struct {
+	Data fundData `json:"data"`
 }
 
 type buyFundRequest struct {
@@ -162,7 +162,7 @@ func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string)
 		return fmt.Errorf("fpx url is empty")
 	}
 
-	if resp.Data.FpxData == (FpxData{}) {
+	if resp.Data.FpxData == (fpxData{}) {
 		return fmt.Errorf("fpx data is empty")
 	}
 
@@ -261,8 +261,8 @@ func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) error {
 	return nil
 }
 
-func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) (BuyFundResponse, error) {
-	res := BuyFundResponse{}
+func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) (buyFundResponse, error) {
+	res := buyFundResponse{}
 
 	reqBody := buyFundRequest{
 		Amount:               amount,
@@ -320,7 +320,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	return res, nil
 }
 
-func checkBuyFundError(resp BuyFundResponse) error {
+func checkBuyFundError(resp buyFundResponse) error {
 	if resp.Data.RejectCode != "" {
 		return fmt.Errorf(
 			"buy fund tng returned with reject code: %v, reject reason: %v, transaction status: %v",

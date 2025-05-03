@@ -17,4 +17,4 @@ If you know how to run this, you know how to run this.
 ## DISCLAIMER
 
 I am in no way affiliated with Asnb, I am just frustruated that I have to stay up to 2 in the morning to buy these funds.
-All code and requests used in this repo can be retrieved from publically available sources. Lastly, thank you Asnb I love you <3
+All code and requests used in this repo can be retrieved from publically available sources.

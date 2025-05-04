@@ -288,8 +288,8 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 		return res, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	req.Header.Add("Authorization", authorization)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Content-Type", "application/json")
 	// TODO: Remove this
 	helpers.PrintRequestHelper(req)
 

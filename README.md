@@ -26,12 +26,14 @@ All code and requests used in this repo can be retrieved from publically availab
 Flags:
 ```
   -a, --amount string           Amount to buy
+      --debug                   Debug requests
       --fpx-bank string         Fpx bank to use (ex. HLB0224)
-  -f, --funds strings           The funds to try, defaults to ASM1, ASM2 and ASM3 (default [asm1,asm2,asm3])
+  -f, --funds strings           The funds to try, if the fund provided is not in the list of accepted values, it will still try to buy the provided fund (default [asm1,asm2,asm3])
   -h, --help                    help for asnbcli
   -p, --password string         Password for your account
   -m, --payment-method string   Payment method to use, accepted values: tngd,boost,fpx
   -u, --username string         Username for your account
+      --verbose                 Print verbose logs
 ```
 
 Expected output: the tool should return a payment link that you can copy / open to pay directly

@@ -164,7 +164,7 @@ func StartExecution(params entryParams) error {
 			paymentLinks = append(paymentLinks, link)
 		}
 	default:
-		panic(fmt.Errorf("unknown payment method: %v", params.paymentMethod))
+		return fmt.Errorf("unknown payment method: %v", params.paymentMethod)
 	}
 
 	// Print results

@@ -21,6 +21,7 @@ func PrintRequestHelper(req *http.Request) {
 	reqByte, err := httputil.DumpRequest(req, true)
 	if err != nil {
 		DebugLogger.Println(fmt.Errorf("httputil.DumpRequest: %w", err))
+		return
 	}
 	DebugLogger.Println("============== Request")
 	DebugLogger.Println(string(reqByte))

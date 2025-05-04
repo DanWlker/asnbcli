@@ -290,7 +290,6 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	req.Header.Add("Authorization", authorization)
 	// req.Header.Add("Accept", "application/json")
 	// req.Header.Add("Content-Type", "application/json")
-	// TODO: Remove this
 	helpers.PrintRequestHelper(req)
 
 	defer helpers.HttpClient.CloseIdleConnections()
@@ -299,7 +298,6 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 		return res, fmt.Errorf("Do: %w", err)
 	}
 	defer resp.Body.Close()
-	// TODO: Remove this
 	helpers.PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)

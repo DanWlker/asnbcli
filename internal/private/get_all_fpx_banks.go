@@ -37,7 +37,6 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	req.Header.Add("Authorization", authorization)
-	// TODO: Remove this
 	helpers.PrintRequestHelper(req)
 
 	defer helpers.HttpClient.CloseIdleConnections()
@@ -46,7 +45,6 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 		return nil, fmt.Errorf("Do: %w", err)
 	}
 	defer resp.Body.Close()
-	// TODO: Remove this
 	helpers.PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)

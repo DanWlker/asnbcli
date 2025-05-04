@@ -28,8 +28,9 @@ type loginRequest struct {
 	Jwt string `json:"jwt"`
 }
 
-func Login(username, password string) (*LoginResult, error) {
+func Login(username, password string) (LoginResult, error) {
 	key := "IVObMPuj2rnhBGaOa0YN5TopZsLnGdPqOffDxXJVOSKFqonbIGE0a7xGgGUdq2_TSzpOBGqe9hMI5nV0AtGMV5ieBo_uwIFWzgL19LI16khI_xdvrMvsBN_i4Ay91qd1zt3lCXdp9-Df16mxIeqVbIn6E1hzQxc_QOWwwS-SkEI"
+	result := LoginResult{}
 
 	currDate := time.Now()
 	currDateUnix := currDate.Unix()
@@ -50,13 +51,13 @@ func Login(username, password string) (*LoginResult, error) {
 	)
 	signedString, err := t.SignedString([]byte(key))
 	if err != nil {
-		return nil, fmt.Errorf("t.SignedString: %w", err)
+		return result, fmt.Errorf("t.SignedString: %w", err)
 	}
 
 	reqBody := loginRequest{Jwt: signedString}
 	reqBodyJson, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("json.Marshal: %w", err)
+		return result, fmt.Errorf("json.Marshal: %w", err)
 	}
 
 	defer helpers.HttpClient.CloseIdleConnections()
@@ -66,21 +67,20 @@ func Login(username, password string) (*LoginResult, error) {
 		bytes.NewBuffer(reqBodyJson),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("http.Post: %w", err)
+		return result, fmt.Errorf("http.Post: %w", err)
 	}
 	defer resp.Body.Close()
 	helpers.PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("resp.Body.Read: %w", err)
+		return result, fmt.Errorf("resp.Body.Read: %w", err)
 	}
 
-	result := LoginResult{}
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		return nil, fmt.Errorf("json.Unmarshal: %w", err)
+		return result, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 
-	return &result, nil
+	return result, nil
 }

@@ -175,5 +175,11 @@ func StartExecution(params entryParams) error {
 		fmt.Println(link)
 	}
 
+	// Logout
+	helpers.VerboseLogger.Println("Logging out...")
+	if err := private.Logout(formattedToken); err != nil {
+		helpers.StdErrPrintln(err)
+	}
+
 	return nil
 }

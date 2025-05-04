@@ -71,16 +71,18 @@ func WithFunds(funds []string) Option {
 }
 
 func StartExecution(params entryParams) error {
+	// Login
 	fmt.Println("Logging in...")
 	loginResult, err := private.Login(params.username, params.password)
 	if err != nil {
 		return fmt.Errorf("private.Login: %w", err)
 	}
-
 	if loginResult.Token == "" {
 		return errors.New("token is empty, exiting")
 	}
+	formattedToken := "Bearer " + loginResult.Token
 
+	// Start buying
 	var (
 		errLists     []error
 		paymentLinks []string
@@ -89,7 +91,7 @@ func StartExecution(params entryParams) error {
 	case Tngd:
 		for _, fund := range params.funds {
 			link, err := private.BuyFundWithTng(
-				fmt.Sprintf("Bearer %v", loginResult.Token),
+				formattedToken,
 				params.amount,
 				fund,
 				loginResult.Uhid,
@@ -104,7 +106,7 @@ func StartExecution(params entryParams) error {
 	case Boost:
 		for _, fund := range params.funds {
 			link, err := private.BuyFundWithBoost(
-				fmt.Sprintf("Bearer %v", loginResult.Token),
+				formattedToken,
 				params.amount,
 				fund,
 				loginResult.Uhid,
@@ -119,7 +121,7 @@ func StartExecution(params entryParams) error {
 	case Fpx:
 		if params.fpxBank == "" {
 			fmt.Println("Getting all fpx banks...")
-			fpxBanks, err := private.GetAllFpxBanks(fmt.Sprintf("Bearer %v", loginResult.Token))
+			fpxBanks, err := private.GetAllFpxBanks(formattedToken)
 			if err != nil {
 				return fmt.Errorf("private.GetAllFpxBanks: %w", err)
 			}
@@ -146,7 +148,7 @@ func StartExecution(params entryParams) error {
 
 		for _, fund := range params.funds {
 			link, err := private.BuyFundWithFpx(
-				fmt.Sprintf("Bearer %v", loginResult.Token),
+				formattedToken,
 				params.amount,
 				fund,
 				loginResult.Uhid,
@@ -163,10 +165,10 @@ func StartExecution(params entryParams) error {
 		panic(fmt.Errorf("unknown payment method: %v", params.paymentMethod))
 	}
 
+	// Print results
 	for _, err := range errLists {
 		fmt.Println(err)
 	}
-
 	for _, link := range paymentLinks {
 		fmt.Println(link)
 	}

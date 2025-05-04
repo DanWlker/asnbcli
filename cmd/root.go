@@ -97,6 +97,8 @@ var rootCmd = &cobra.Command{
 				fmt.Println("bank for fpx payment not specified, will prompt again later")
 			}
 			withPaymentMethod = internal.WithFpx(fpxBank)
+		default:
+			panic(fmt.Errorf("unknown payment method: %v", paymentMethod))
 		}
 
 		// Fund list
@@ -117,6 +119,7 @@ var rootCmd = &cobra.Command{
 			funds[i] = fundPostfix
 		}
 
+		// Start Execution
 		if err := internal.StartExecution(internal.NewEntryParams(
 			internal.WithUsername(username),
 			internal.WithPassword(password),
@@ -142,7 +145,7 @@ func init() {
 	rootCmd.Flags().StringP(usernameF, "u", "", "Username for your account")
 	rootCmd.Flags().StringP(passwordF, "p", "", "Password for your account")
 	rootCmd.Flags().StringP(amountF, "a", "", "Amount to buy")
-	rootCmd.Flags().StringP(paymentMethodF, "m", "", fmt.Sprintf("Payment method to use, accepted values: %v", strings.Join(internal.AllPaymentMethods, ",")))
+	rootCmd.Flags().StringP(paymentMethodF, "m", "", "Payment method to use, accepted values: "+strings.Join(internal.AllPaymentMethods, ","))
 	rootCmd.Flags().String(fpxBankF, "", "Fpx bank to use (ex. HLB0224)")
 	// rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
 	// rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")

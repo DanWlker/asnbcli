@@ -35,15 +35,16 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 		return nil, fmt.Errorf("http.NewRequest: %w", err)
 	}
 	req.Header.Add("Authorization", authorization)
+	// TODO: Remove this
+	PrintRequestHelper(req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.DefaultClient.Do: %w", err)
 	}
 	defer resp.Body.Close()
-
 	// TODO: Remove this
-	// PrintResponseHelper(resp)
+	PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

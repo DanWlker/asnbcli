@@ -12,9 +12,9 @@ func PrintResponseHelper(resp *http.Response) {
 		fmt.Println(fmt.Errorf("httputil.DumpResponse: %w", err))
 		return
 	}
-	fmt.Println("")
+	fmt.Println("============== Response")
 	fmt.Println(string(respByte))
-	fmt.Println("")
+	fmt.Println("==============")
 }
 
 func PrintRequestHelper(req *http.Request) {
@@ -22,7 +22,7 @@ func PrintRequestHelper(req *http.Request) {
 	if err != nil {
 		fmt.Println(fmt.Errorf("httputil.DumpRequest: %w", err))
 	}
-	fmt.Println("")
+	fmt.Println("============== Request")
 	fmt.Println(string(reqByte))
-	fmt.Println("")
+	fmt.Println("==============")
 }

@@ -68,7 +68,6 @@ func Login(username, password string) (*LoginResult, error) {
 		return nil, fmt.Errorf("http.Post: %w", err)
 	}
 	defer resp.Body.Close()
-
 	// TODO: Remove this
 	PrintResponseHelper(resp)
 

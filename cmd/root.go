@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/DanWlker/asnbcli/internal"
+	"github.com/DanWlker/asnbcli/internal/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +37,7 @@ var rootCmd = &cobra.Command{
 		// Username
 		username, err := cmd.Flags().GetString(usernameF)
 		if err != nil || username == "" {
-			username, err = internal.InputHelper("Username: ", false)
+			username, err = helpers.InputHelper("Username: ", false)
 			if err != nil {
 				panic(fmt.Errorf("unable to get username: %v", err))
 			}
@@ -45,7 +46,7 @@ var rootCmd = &cobra.Command{
 		// Password
 		password, err := cmd.Flags().GetString(passwordF)
 		if err != nil || password == "" {
-			password, err = internal.InputHelper("Password: ", true)
+			password, err = helpers.InputHelper("Password: ", true)
 			if err != nil {
 				panic(fmt.Errorf("unable to get password: %v", err))
 			}
@@ -54,7 +55,7 @@ var rootCmd = &cobra.Command{
 		// Amount
 		amount, err := cmd.Flags().GetString(amountF)
 		if err != nil || amount == "" {
-			amount, err = internal.InputHelper("Amount in RM (ex. 20): ", false)
+			amount, err = helpers.InputHelper("Amount in RM (ex. 20): ", false)
 			if err != nil {
 				panic(fmt.Errorf("unable to get amount: %v", err))
 			}
@@ -68,7 +69,7 @@ var rootCmd = &cobra.Command{
 				fmt.Printf("%v: %v\n", i, method)
 			}
 
-			selectedIdxStr, err := internal.InputHelper("Select payment method (ex. 1): ", false)
+			selectedIdxStr, err := helpers.InputHelper("Select payment method (ex. 1): ", false)
 			if err != nil {
 				panic(fmt.Errorf("unable to get payment method: %v", err))
 			}

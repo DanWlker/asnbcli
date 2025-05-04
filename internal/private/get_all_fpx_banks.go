@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/DanWlker/asnbcli/internal/helpers"
 )
 
 type FpxBanks struct {
@@ -36,7 +38,7 @@ func GetAllFpxBanks(authorization string, debug bool) ([]FpxBanks, error) {
 	}
 	req.Header.Add("Authorization", authorization)
 	// TODO: Remove this
-	PrintRequestHelper(req, debug)
+	helpers.PrintRequestHelper(req, debug)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -44,7 +46,7 @@ func GetAllFpxBanks(authorization string, debug bool) ([]FpxBanks, error) {
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	PrintResponseHelper(resp, debug)
+	helpers.PrintResponseHelper(resp, debug)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

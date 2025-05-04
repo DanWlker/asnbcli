@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/DanWlker/asnbcli/internal/helpers"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -69,7 +70,7 @@ func Login(username, password string, debug bool) (*LoginResult, error) {
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	PrintResponseHelper(resp, debug)
+	helpers.PrintResponseHelper(resp, debug)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/DanWlker/asnbcli/internal/helpers"
 )
 
 type fpxData struct {
@@ -289,7 +291,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	// TODO: Remove this
-	PrintRequestHelper(req, debug)
+	helpers.PrintRequestHelper(req, debug)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -297,7 +299,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	PrintResponseHelper(resp, debug)
+	helpers.PrintResponseHelper(resp, debug)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

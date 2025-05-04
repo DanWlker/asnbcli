@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/DanWlker/asnbcli/internal/helpers"
 	"github.com/DanWlker/asnbcli/internal/private"
 )
 
@@ -140,7 +141,7 @@ func StartExecution(params entryParams) error {
 				fmt.Printf("%v: %v\n", i, fpxBank.FullName)
 			}
 
-			selectedId, err := InputHelper("Enter number (ex. 1): ", false)
+			selectedId, err := helpers.InputHelper("Enter number (ex. 1): ", false)
 			if err != nil {
 				return fmt.Errorf("select bank: InputHelper: %w", err)
 			}

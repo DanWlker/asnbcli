@@ -15,6 +15,7 @@ type entryParams struct {
 	amount        string
 	paymentMethod string
 	fpxBank       string
+	debug         bool
 }
 
 type Option func(*entryParams)
@@ -70,10 +71,16 @@ func WithFunds(funds []string) Option {
 	}
 }
 
+func WithDebug(debug bool) Option {
+	return func(e *entryParams) {
+		e.debug = debug
+	}
+}
+
 func StartExecution(params entryParams) error {
 	// Login
 	fmt.Println("Logging in...")
-	loginResult, err := private.Login(params.username, params.password)
+	loginResult, err := private.Login(params.username, params.password, params.debug)
 	if err != nil {
 		return fmt.Errorf("private.Login: %w", err)
 	}
@@ -95,6 +102,7 @@ func StartExecution(params entryParams) error {
 				params.amount,
 				fund,
 				loginResult.Uhid,
+				params.debug,
 			)
 			if err != nil {
 				errLists = append(errLists, err)
@@ -110,6 +118,7 @@ func StartExecution(params entryParams) error {
 				params.amount,
 				fund,
 				loginResult.Uhid,
+				params.debug,
 			)
 			if err != nil {
 				errLists = append(errLists, err)
@@ -121,7 +130,7 @@ func StartExecution(params entryParams) error {
 	case Fpx:
 		if params.fpxBank == "" {
 			fmt.Println("Getting all fpx banks...")
-			fpxBanks, err := private.GetAllFpxBanks(formattedToken)
+			fpxBanks, err := private.GetAllFpxBanks(formattedToken, params.debug)
 			if err != nil {
 				return fmt.Errorf("private.GetAllFpxBanks: %w", err)
 			}
@@ -153,6 +162,7 @@ func StartExecution(params entryParams) error {
 				fund,
 				loginResult.Uhid,
 				params.fpxBank,
+				params.debug,
 			)
 			if err != nil {
 				errLists = append(errLists, err)

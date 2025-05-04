@@ -24,6 +24,7 @@ const (
 	amountF        = "amount"
 	paymentMethodF = "payment-method"
 	fpxBankF       = "fpx-bank"
+	debugF         = "debug"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -119,12 +120,19 @@ var rootCmd = &cobra.Command{
 			funds[i] = fundPostfix
 		}
 
+		// Debug
+		debug, err := cmd.Flags().GetBool(debugF)
+		if err != nil {
+			fmt.Printf("unable to get debug flag, not printing debug logs, please report this error: %v\n", err)
+		}
+
 		// Start Execution
 		if err := internal.StartExecution(internal.NewEntryParams(
 			internal.WithUsername(username),
 			internal.WithPassword(password),
 			internal.WithFunds(funds),
 			internal.WithAmount(amount),
+			internal.WithDebug(debug),
 			withPaymentMethod,
 		)); err != nil {
 			panic(err)
@@ -152,4 +160,5 @@ func init() {
 	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.Asm1, internal.Asm2, internal.Asm3}, "The funds to try, if the fund provided is not in the list of accepted values, it will still try to buy the provided fund")
 	// rootCmd.Flags().StringP(tokenF, "t", "", "The bearer token to use for requests")
 	// rootCmd.Flags().Bool(writeTokenF, false, "Write the bearer token to a file to reuse in future calls")
+	rootCmd.Flags().Bool(debugF, false, "Debug requests")
 }

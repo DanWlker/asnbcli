@@ -28,7 +28,7 @@ type loginRequest struct {
 	Jwt string `json:"jwt"`
 }
 
-func Login(username, password string) (*LoginResult, error) {
+func Login(username, password string, debug bool) (*LoginResult, error) {
 	key := "IVObMPuj2rnhBGaOa0YN5TopZsLnGdPqOffDxXJVOSKFqonbIGE0a7xGgGUdq2_TSzpOBGqe9hMI5nV0AtGMV5ieBo_uwIFWzgL19LI16khI_xdvrMvsBN_i4Ay91qd1zt3lCXdp9-Df16mxIeqVbIn6E1hzQxc_QOWwwS-SkEI"
 
 	currDate := time.Now()
@@ -69,7 +69,7 @@ func Login(username, password string) (*LoginResult, error) {
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	PrintResponseHelper(resp)
+	PrintResponseHelper(resp, debug)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

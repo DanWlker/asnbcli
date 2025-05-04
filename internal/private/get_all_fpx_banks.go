@@ -25,7 +25,7 @@ type getAllFpxBanksResult struct {
 	Data []FpxBanks `json:"data"`
 }
 
-func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
+func GetAllFpxBanks(authorization string, debug bool) ([]FpxBanks, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		"https://myasnb-api-v4.myasnb.com.my/v2/subscription/fpxbanks",
@@ -36,7 +36,7 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	}
 	req.Header.Add("Authorization", authorization)
 	// TODO: Remove this
-	PrintRequestHelper(req)
+	PrintRequestHelper(req, debug)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -44,7 +44,7 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	PrintResponseHelper(resp)
+	PrintResponseHelper(resp, debug)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

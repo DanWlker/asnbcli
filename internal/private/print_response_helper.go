@@ -6,7 +6,11 @@ import (
 	"net/http/httputil"
 )
 
-func PrintResponseHelper(resp *http.Response) {
+func PrintResponseHelper(resp *http.Response, debug bool) {
+	if !debug {
+		return
+	}
+
 	respByte, err := httputil.DumpResponse(resp, true)
 	if err != nil {
 		fmt.Println(fmt.Errorf("httputil.DumpResponse: %w", err))
@@ -17,7 +21,11 @@ func PrintResponseHelper(resp *http.Response) {
 	fmt.Println("==============")
 }
 
-func PrintRequestHelper(req *http.Request) {
+func PrintRequestHelper(req *http.Request, debug bool) {
+	if !debug {
+		return
+	}
+
 	reqByte, err := httputil.DumpRequest(req, true)
 	if err != nil {
 		fmt.Println(fmt.Errorf("httputil.DumpRequest: %w", err))

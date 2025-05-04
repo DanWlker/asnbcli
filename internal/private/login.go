@@ -60,7 +60,7 @@ func Login(username, password string) (*LoginResult, error) {
 		return nil, fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	resp, err := http.Post(
+	resp, err := helpers.HttpClient.Post(
 		"https://myasnb-api-v4.myasnb.com.my/v2/login",
 		"application/json",
 		bytes.NewBuffer(reqBodyJson),

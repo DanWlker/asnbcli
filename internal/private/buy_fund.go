@@ -293,9 +293,9 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	// TODO: Remove this
 	helpers.PrintRequestHelper(req)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := helpers.HttpClient.Do(req)
 	if err != nil {
-		return res, fmt.Errorf("http.DefaultClient.Do: %w", err)
+		return res, fmt.Errorf("Do: %w", err)
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this

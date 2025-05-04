@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"io"
 	"log"
 	"os"
 )
@@ -8,14 +9,20 @@ import (
 var DebugLogger, VerboseLogger *log.Logger
 
 // Note this will be usd for prompts as well
-var StdErrLogger = log.New(os.Stderr, "error: ", 0)
+var (
+	StdErrLogger = log.New(os.Stderr, "error: ", 0)
+)
 
 func InitVerboseAndDebugLogger(verbose, debug bool) {
+	verboseWriter := io.Discard
 	if verbose {
-		VerboseLogger = log.New(os.Stderr, "verbose: ", 0)
+		verboseWriter = os.Stderr
 	}
+	VerboseLogger = log.New(verboseWriter, "verbose: ", 0)
 
+	debugWriter := io.Discard
 	if debug {
-		DebugLogger = log.New(os.Stderr, "debug: ", 0)
+		debugWriter = os.Stderr
 	}
+	DebugLogger = log.New(debugWriter, "debug: ", 0)
 }

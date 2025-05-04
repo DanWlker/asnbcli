@@ -148,22 +148,22 @@ type buyFundRequest struct {
 	PaymentProcessor string `json:"paymentProcessor,omitempty"`
 }
 
-func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) error {
+func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) (string, error) {
 	resp, err := buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
 	if err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithFpx: %w", err)
 	}
 
 	if err := checkBuyFundError(resp); err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithFpx: %w", err)
 	}
 
 	if resp.Data.FpxUrl == "" {
-		return fmt.Errorf("fpx url is empty")
+		return "", fmt.Errorf("BuyFundWithFpx: fpx url is empty")
 	}
 
 	if resp.Data.FpxData == (fpxData{}) {
-		return fmt.Errorf("fpx data is empty")
+		return "", fmt.Errorf("BuyFundWithFpx: fpx data is empty")
 	}
 
 	// let L = encodeURI(
@@ -218,47 +218,41 @@ func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string)
 	queryParams.Add("fpx_version", resp.Data.FpxData.FpxVersion)
 	queryParams.Add("fpx_checkSum", resp.Data.FpxData.FpxCheckSum)
 
-	fmt.Println(resp.Data.FpxUrl + "?" + queryParams.Encode())
-
-	return nil
+	return resp.Data.FpxUrl + "?" + queryParams.Encode(), nil
 }
 
-func BuyFundWithTng(authorization, amount, fund, unitHolderId string) error {
+func BuyFundWithTng(authorization, amount, fund, unitHolderId string) (string, error) {
 	resp, err := buyFund(authorization, amount, fund, unitHolderId, "TNGD", "")
 	if err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithTng: %w", err)
 	}
 
 	if err := checkBuyFundError(resp); err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithTng: %w", err)
 	}
 
 	if resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl == "" {
-		return fmt.Errorf("tngd checkout url is empty")
+		return "", fmt.Errorf("BuyFundWithTng: tngd checkout url is empty")
 	}
 
-	fmt.Println(resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl)
-
-	return nil
+	return resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl, nil
 }
 
-func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) error {
+func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) (string, error) {
 	resp, err := buyFund(authorization, amount, fund, unitHolderId, "boost", "")
 	if err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithBoost: %w", err)
 	}
 
 	if err := checkBuyFundError(resp); err != nil {
-		return err
+		return "", fmt.Errorf("BuyFundWithBoost: %w", err)
 	}
 
 	if resp.Data.Boost.BoostQrResponse.CheckoutUri == "" {
-		return fmt.Errorf("boost checkout uri is empty")
+		return "", fmt.Errorf("BuyFundWithBoost: boost checkout uri is empty")
 	}
 
-	fmt.Println(resp.Data.Boost.BoostQrResponse.CheckoutUri)
-
-	return nil
+	return resp.Data.Boost.BoostQrResponse.CheckoutUri, nil
 }
 
 func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) (buyFundResponse, error) {

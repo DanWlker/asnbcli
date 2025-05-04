@@ -81,30 +81,40 @@ func StartExecution(params entryParams) error {
 		return errors.New("token is empty, exiting")
 	}
 
+	var (
+		errLists     []error
+		paymentLinks []string
+	)
 	switch params.paymentMethod {
 	case Tngd:
 		for _, fund := range params.funds {
-			err = private.BuyFundWithTng(
+			link, err := private.BuyFundWithTng(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fundToUrlPostfix[fund],
+				fund,
 				loginResult.Uhid,
 			)
 			if err != nil {
-				fmt.Println("error: BuyFundWithTng: %w", err)
+				errLists = append(errLists, err)
+				continue
 			}
+
+			paymentLinks = append(paymentLinks, link)
 		}
 	case Boost:
 		for _, fund := range params.funds {
-			err = private.BuyFundWithBoost(
+			link, err := private.BuyFundWithBoost(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fundToUrlPostfix[fund],
+				fund,
 				loginResult.Uhid,
 			)
 			if err != nil {
-				return fmt.Errorf("BuyFundWithBoost: %w", err)
+				errLists = append(errLists, err)
+				continue
 			}
+
+			paymentLinks = append(paymentLinks, link)
 		}
 	case Fpx:
 		if params.fpxBank == "" {
@@ -135,19 +145,30 @@ func StartExecution(params entryParams) error {
 		}
 
 		for _, fund := range params.funds {
-			err = private.BuyFundWithFpx(
+			link, err := private.BuyFundWithFpx(
 				fmt.Sprintf("Bearer %v", loginResult.Token),
 				params.amount,
-				fundToUrlPostfix[fund],
+				fund,
 				loginResult.Uhid,
 				params.fpxBank,
 			)
 			if err != nil {
-				return fmt.Errorf("BuyFund: %w", err)
+				errLists = append(errLists, err)
+				continue
 			}
+
+			paymentLinks = append(paymentLinks, link)
 		}
 	default:
 		panic(fmt.Errorf("unknown payment method: %v", params.paymentMethod))
+	}
+
+	for _, err := range errLists {
+		fmt.Println(err)
+	}
+
+	for _, link := range paymentLinks {
+		fmt.Println(link)
 	}
 
 	return nil

@@ -6,7 +6,7 @@ const (
 	Asm3 = "asm3"
 )
 
-var fundToUrlPostfix = map[string]string{
+var FundToUrlPostfix = map[string]string{
 	Asm1: "ASM",
 	Asm2: "ASW",
 	Asm3: "AS1M",

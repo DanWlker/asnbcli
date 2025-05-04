@@ -82,12 +82,12 @@ var rootCmd = &cobra.Command{
 			paymentMethod = internal.AllPaymentMethods[int(selectedIdx)]
 		}
 
-		var paymentMethodFunc internal.Option
+		var withPaymentMethod internal.Option
 		switch paymentMethod {
 		case internal.Tngd:
-			paymentMethodFunc = internal.WithTngd()
+			withPaymentMethod = internal.WithTngd()
 		case internal.Boost:
-			paymentMethodFunc = internal.WithBoost()
+			withPaymentMethod = internal.WithBoost()
 		case internal.Fpx:
 			fpxBank, err := cmd.Flags().GetString(fpxBankF)
 			if err != nil {
@@ -96,7 +96,7 @@ var rootCmd = &cobra.Command{
 			if fpxBank == "" {
 				fmt.Println("bank for fpx payment not specified, will prompt again later")
 			}
-			paymentMethodFunc = internal.WithFpx(fpxBank)
+			withPaymentMethod = internal.WithFpx(fpxBank)
 		}
 
 		// Fund list
@@ -108,13 +108,21 @@ var rootCmd = &cobra.Command{
 			fmt.Println("No funds specified")
 			return
 		}
+		for i, fund := range funds {
+			fundPostfix, ok := internal.FundToUrlPostfix[fund]
+			if !ok {
+				fmt.Printf("unknown fund %v, will still try to buy\n", fund)
+				continue
+			}
+			funds[i] = fundPostfix
+		}
 
 		if err := internal.StartExecution(internal.NewEntryParams(
 			internal.WithUsername(username),
 			internal.WithPassword(password),
 			internal.WithFunds(funds),
 			internal.WithAmount(amount),
-			paymentMethodFunc,
+			withPaymentMethod,
 		)); err != nil {
 			panic(err)
 		}
@@ -138,7 +146,7 @@ func init() {
 	rootCmd.Flags().String(fpxBankF, "", "Fpx bank to use (ex. HLB0224)")
 	// rootCmd.Flags().IntP(repeatF, "r", 0, "Amount of times to repeat if fail")
 	// rootCmd.Flags().IntP(offsetF, "o", 5, "Offset time to wait before repeating in seconds")
-	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.Asm1, internal.Asm2, internal.Asm3}, "The funds to try, defaults to ASM1, ASM2 and ASM3")
+	rootCmd.Flags().StringSliceP(fundsF, "f", []string{internal.Asm1, internal.Asm2, internal.Asm3}, "The funds to try, if the fund provided is not in the list of accepted values, it will still try to buy the provided fund")
 	// rootCmd.Flags().StringP(tokenF, "t", "", "The bearer token to use for requests")
 	// rootCmd.Flags().Bool(writeTokenF, false, "Write the bearer token to a file to reuse in future calls")
 }

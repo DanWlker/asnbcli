@@ -2,7 +2,7 @@
 
 A cli app to simplify buying asnb funds so you (hopefully) don't have to wake up at 2 am. The cli takes your username and password and tries to buy asm1, asm2 and asm3 funds, if successful it will return a payment link so you can pay directly. You can use this with a cron & a cli app that texts yourself (maybe coming soon I'm interested in making something like that)
 
-If you would like to test out if it works, you could test it with ASN funds, as those can be bought directly. ASM still requires a bit of luck.
+If you would like to test out if it works, you could test it with ASN funds (use `-f ASN_CODE`, you can find the code at `/v2/subscription/provisional/{YOUR_ID}/{ASN_CODE}`), as those can be bought directly. ASM still requires a bit of luck.
 
 ## READ FIRST
 

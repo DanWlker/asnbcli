@@ -40,6 +40,7 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	// TODO: Remove this
 	helpers.PrintRequestHelper(req)
 
+	defer helpers.HttpClient.CloseIdleConnections()
 	resp, err := helpers.HttpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Do: %w", err)

@@ -59,6 +59,7 @@ func Login(username, password string) (*LoginResult, error) {
 		return nil, fmt.Errorf("json.Marshal: %w", err)
 	}
 
+	defer helpers.HttpClient.CloseIdleConnections()
 	resp, err := helpers.HttpClient.Post(
 		"https://myasnb-api-v4.myasnb.com.my/v2/login",
 		"application/json",

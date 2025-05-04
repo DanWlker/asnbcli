@@ -8,6 +8,7 @@ import (
 )
 
 func Logout(authorization string) error {
+	defer helpers.HttpClient.CloseIdleConnections()
 	resp, err := helpers.HttpClient.Post(
 		"https://myasnb-api-v4.myasnb.com.my/v2/logout",
 		"application/json",
@@ -20,3 +21,4 @@ func Logout(authorization string) error {
 
 	return nil
 }
+

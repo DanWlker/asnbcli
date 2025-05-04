@@ -26,6 +26,7 @@ const (
 	paymentMethodF = "payment-method"
 	fpxBankF       = "fpx-bank"
 	debugF         = "debug"
+	verboseF       = "verbose"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -34,6 +35,21 @@ var rootCmd = &cobra.Command{
 	Short: "A cli app to simplify buying asnb funds so you (hopefully) don't have to wake up at 2 am ",
 	Long:  `A cli app that returns a payment link, simplifies the process of buying asnb funds. It also has repeat functionality with offset for each loop`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Debug
+		debug, err := cmd.Flags().GetBool(debugF)
+		if err != nil {
+			helpers.StdErrLogger.Printf("unable to get debug flag, not printing debug logs, please report this error: %v\n", err)
+		}
+
+		// Verbose
+		verbose, err := cmd.Flags().GetBool(verboseF)
+		if err != nil {
+			helpers.StdErrLogger.Printf("unable to get verbose flag, not printing verbose logs, please report this error: %v\n", err)
+		}
+
+		// Init loggers
+		helpers.InitVerboseAndDebugLogger(verbose, debug)
+
 		// Username
 		username, err := cmd.Flags().GetString(usernameF)
 		if err != nil || username == "" {
@@ -66,7 +82,7 @@ var rootCmd = &cobra.Command{
 		paymentMethod, err := cmd.Flags().GetString(paymentMethodF)
 		if err != nil || paymentMethod == "" {
 			for i, method := range internal.AllPaymentMethods {
-				fmt.Printf("%v: %v\n", i, method)
+				helpers.StdErrLogger.Printf("%v: %v\n", i, method)
 			}
 
 			selectedIdxStr, err := helpers.InputHelper("Select payment method (ex. 1): ", false)
@@ -93,10 +109,10 @@ var rootCmd = &cobra.Command{
 		case internal.Fpx:
 			fpxBank, err := cmd.Flags().GetString(fpxBankF)
 			if err != nil {
-				fmt.Println("error when getting fpx bank, will prompt again later")
+				helpers.StdErrLogger.Println("error when getting fpx bank, will prompt again later")
 			}
 			if fpxBank == "" {
-				fmt.Println("bank for fpx payment not specified, will prompt again later")
+				helpers.StdErrLogger.Println("bank for fpx payment not specified, will prompt again later")
 			}
 			withPaymentMethod = internal.WithFpx(fpxBank)
 		default:
@@ -109,22 +125,15 @@ var rootCmd = &cobra.Command{
 			panic(fmt.Errorf("unable to get funds: %v", err))
 		}
 		if len(funds) == 0 {
-			fmt.Println("No funds specified")
 			return
 		}
 		for i, fund := range funds {
 			fundPostfix, ok := internal.FundToUrlPostfix[fund]
 			if !ok {
-				fmt.Printf("unknown fund %v, will still try to buy\n", fund)
+				helpers.StdErrLogger.Printf("unknown fund %v, will still try to buy\n", fund)
 				continue
 			}
 			funds[i] = fundPostfix
-		}
-
-		// Debug
-		debug, err := cmd.Flags().GetBool(debugF)
-		if err != nil {
-			fmt.Printf("unable to get debug flag, not printing debug logs, please report this error: %v\n", err)
 		}
 
 		// Start Execution
@@ -133,7 +142,6 @@ var rootCmd = &cobra.Command{
 			internal.WithPassword(password),
 			internal.WithFunds(funds),
 			internal.WithAmount(amount),
-			internal.WithDebug(debug),
 			withPaymentMethod,
 		)); err != nil {
 			panic(err)

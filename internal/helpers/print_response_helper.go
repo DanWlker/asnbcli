@@ -6,31 +6,23 @@ import (
 	"net/http/httputil"
 )
 
-func PrintResponseHelper(resp *http.Response, debug bool) {
-	if !debug {
-		return
-	}
-
+func PrintResponseHelper(resp *http.Response) {
 	respByte, err := httputil.DumpResponse(resp, true)
 	if err != nil {
-		fmt.Println(fmt.Errorf("httputil.DumpResponse: %w", err))
+		DebugLogger.Println(fmt.Errorf("httputil.DumpResponse: %w", err))
 		return
 	}
-	fmt.Println("============== Response")
-	fmt.Println(string(respByte))
-	fmt.Println("==============")
+	DebugLogger.Println("============== Response")
+	DebugLogger.Println(string(respByte))
+	DebugLogger.Println("==============")
 }
 
-func PrintRequestHelper(req *http.Request, debug bool) {
-	if !debug {
-		return
-	}
-
+func PrintRequestHelper(req *http.Request) {
 	reqByte, err := httputil.DumpRequest(req, true)
 	if err != nil {
-		fmt.Println(fmt.Errorf("httputil.DumpRequest: %w", err))
+		DebugLogger.Println(fmt.Errorf("httputil.DumpRequest: %w", err))
 	}
-	fmt.Println("============== Request")
-	fmt.Println(string(reqByte))
-	fmt.Println("==============")
+	DebugLogger.Println("============== Request")
+	DebugLogger.Println(string(reqByte))
+	DebugLogger.Println("==============")
 }

@@ -150,8 +150,8 @@ type buyFundRequest struct {
 	PaymentProcessor string `json:"paymentProcessor,omitempty"`
 }
 
-func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string, debug bool) (string, error) {
-	resp, err := buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId, debug)
+func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string) (string, error) {
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "", fpxBankId)
 	if err != nil {
 		return "", fmt.Errorf("BuyFundWithFpx: %w", err)
 	}
@@ -223,8 +223,8 @@ func BuyFundWithFpx(authorization, amount, fund, unitHolderId, fpxBankId string,
 	return resp.Data.FpxUrl + "?" + queryParams.Encode(), nil
 }
 
-func BuyFundWithTng(authorization, amount, fund, unitHolderId string, debug bool) (string, error) {
-	resp, err := buyFund(authorization, amount, fund, unitHolderId, "TNGD", "", debug)
+func BuyFundWithTng(authorization, amount, fund, unitHolderId string) (string, error) {
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "TNGD", "")
 	if err != nil {
 		return "", fmt.Errorf("BuyFundWithTng: %w", err)
 	}
@@ -240,8 +240,8 @@ func BuyFundWithTng(authorization, amount, fund, unitHolderId string, debug bool
 	return resp.Data.TngdUrl.TngdBody.TngdResponse.Response.Body.CheckoutUrl, nil
 }
 
-func BuyFundWithBoost(authorization, amount, fund, unitHolderId string, debug bool) (string, error) {
-	resp, err := buyFund(authorization, amount, fund, unitHolderId, "boost", "", debug)
+func BuyFundWithBoost(authorization, amount, fund, unitHolderId string) (string, error) {
+	resp, err := buyFund(authorization, amount, fund, unitHolderId, "boost", "")
 	if err != nil {
 		return "", fmt.Errorf("BuyFundWithBoost: %w", err)
 	}
@@ -257,7 +257,7 @@ func BuyFundWithBoost(authorization, amount, fund, unitHolderId string, debug bo
 	return resp.Data.Boost.BoostQrResponse.CheckoutUri, nil
 }
 
-func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string, debug bool) (buyFundResponse, error) {
+func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBankId string) (buyFundResponse, error) {
 	res := buyFundResponse{}
 
 	reqBody := buyFundRequest{
@@ -291,7 +291,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	// TODO: Remove this
-	helpers.PrintRequestHelper(req, debug)
+	helpers.PrintRequestHelper(req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -299,7 +299,7 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	}
 	defer resp.Body.Close()
 	// TODO: Remove this
-	helpers.PrintResponseHelper(resp, debug)
+	helpers.PrintResponseHelper(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

@@ -128,9 +128,9 @@ func StartExecution(params entryParams) error {
 				return fmt.Errorf("private.GetAllFpxBanks: %w", err)
 			}
 
-			helpers.StdErrLogger.Println("Select bank to use...")
+			helpers.StdErrPrintln("Select bank to use...")
 			for i, fpxBank := range fpxBanks {
-				helpers.StdErrLogger.Printf("%v: %v\n", i, fpxBank.FullName)
+				helpers.StdErrPrintf("%v: %v\n", i, fpxBank.FullName)
 			}
 
 			selectedId, err := helpers.InputHelper("Enter number (ex. 1): ", false)
@@ -169,7 +169,7 @@ func StartExecution(params entryParams) error {
 
 	// Print results
 	for _, err := range errLists {
-		helpers.StdErrLogger.Println(err)
+		helpers.StdErrPrintln(err)
 	}
 	for _, link := range paymentLinks {
 		fmt.Println(link)

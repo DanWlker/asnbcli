@@ -11,14 +11,14 @@ import (
 )
 
 func InputHelper(prompt string, shouldHide bool) (string, error) {
-	StdErrLogger.Print(prompt)
+	StdErrPrint(prompt)
 
 	if shouldHide {
 		valueBytes, err := term.ReadPassword(int(syscall.Stdin))
 		if err != nil {
 			return "", fmt.Errorf("InputHelper: ReadPassword: %w", err)
 		}
-		StdErrLogger.Print("\n")
+		StdErrPrint("\n")
 		return string(valueBytes), nil
 	}
 

@@ -38,13 +38,13 @@ var rootCmd = &cobra.Command{
 		// Debug
 		debug, err := cmd.Flags().GetBool(debugF)
 		if err != nil {
-			helpers.StdErrLogger.Printf("unable to get debug flag, not printing debug logs, please report this error: %v\n", err)
+			helpers.StdErrPrintf("unable to get debug flag, not printing debug logs, please report this error: %v\n", err)
 		}
 
 		// Verbose
 		verbose, err := cmd.Flags().GetBool(verboseF)
 		if err != nil {
-			helpers.StdErrLogger.Printf("unable to get verbose flag, not printing verbose logs, please report this error: %v\n", err)
+			helpers.StdErrPrintf("unable to get verbose flag, not printing verbose logs, please report this error: %v\n", err)
 		}
 
 		// Init loggers
@@ -82,7 +82,7 @@ var rootCmd = &cobra.Command{
 		paymentMethod, err := cmd.Flags().GetString(paymentMethodF)
 		if err != nil || paymentMethod == "" {
 			for i, method := range internal.AllPaymentMethods {
-				helpers.StdErrLogger.Printf("%v: %v\n", i, method)
+				helpers.StdErrPrintf("%v: %v\n", i, method)
 			}
 
 			selectedIdxStr, err := helpers.InputHelper("Select payment method (ex. 1): ", false)
@@ -109,10 +109,10 @@ var rootCmd = &cobra.Command{
 		case internal.Fpx:
 			fpxBank, err := cmd.Flags().GetString(fpxBankF)
 			if err != nil {
-				helpers.StdErrLogger.Println("error when getting fpx bank, will prompt again later")
+				helpers.StdErrPrintln("error when getting fpx bank, will prompt again later")
 			}
 			if fpxBank == "" {
-				helpers.StdErrLogger.Println("bank for fpx payment not specified, will prompt again later")
+				helpers.StdErrPrintln("bank for fpx payment not specified, will prompt again later")
 			}
 			withPaymentMethod = internal.WithFpx(fpxBank)
 		default:
@@ -130,7 +130,7 @@ var rootCmd = &cobra.Command{
 		for i, fund := range funds {
 			fundPostfix, ok := internal.FundToUrlPostfix[fund]
 			if !ok {
-				helpers.StdErrLogger.Printf("unknown fund %v, will still try to buy\n", fund)
+				helpers.StdErrPrintf("unknown fund %v, will still try to buy\n", fund)
 				continue
 			}
 			funds[i] = fundPostfix
@@ -170,4 +170,5 @@ func init() {
 	// rootCmd.Flags().StringP(tokenF, "t", "", "The bearer token to use for requests")
 	// rootCmd.Flags().Bool(writeTokenF, false, "Write the bearer token to a file to reuse in future calls")
 	rootCmd.Flags().Bool(debugF, false, "Debug requests")
+	rootCmd.Flags().Bool(verboseF, false, "Print verbose logs")
 }

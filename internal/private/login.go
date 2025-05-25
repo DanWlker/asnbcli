@@ -72,13 +72,8 @@ func Login(username, password string) (LoginResult, error) {
 	defer resp.Body.Close()
 	helpers.PrintResponseHelper(resp)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return result, fmt.Errorf("resp.Body.Read: %w", err)
-	}
-
-	err = json.Unmarshal(body, &result)
-	if err != nil {
+	decoder := json.NewDecoder(resp.Body)
+	if err = decoder.Decode(&result); err != nil {
 		return result, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 

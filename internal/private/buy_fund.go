@@ -300,13 +300,8 @@ func buyFund(authorization, amount, fund, unitHolderId, paymentProcessor, fpxBan
 	defer resp.Body.Close()
 	helpers.PrintResponseHelper(resp)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, fmt.Errorf("resp.Body.Read: %w", err)
-	}
-
-	err = json.Unmarshal(body, &res)
-	if err != nil {
+	decoder := json.NewDecoder(resp.Body)
+	if err = decoder.Decode(&res); err != nil {
 		return res, err
 	}
 

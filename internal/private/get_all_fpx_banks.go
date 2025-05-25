@@ -47,14 +47,9 @@ func GetAllFpxBanks(authorization string) ([]FpxBanks, error) {
 	defer resp.Body.Close()
 	helpers.PrintResponseHelper(resp)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll: %w", err)
-	}
-
 	result := getAllFpxBanksResult{}
-	err = json.Unmarshal(body, &result)
-	if err != nil {
+	decoder := json.NewDecoder(resp.Body)
+	if err = decoder.Decode(&result); err != nil {
 		return nil, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 

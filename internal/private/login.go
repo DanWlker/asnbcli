@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/DanWlker/asnbcli/internal/helpers"

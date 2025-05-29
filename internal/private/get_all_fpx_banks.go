@@ -3,7 +3,6 @@ package private
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/DanWlker/asnbcli/internal/helpers"
